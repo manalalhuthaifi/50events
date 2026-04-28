@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>عقد عمل</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+body{
+  font-family: 'Tahoma';
+  background:#f5f5f5;
+  padding:20px;
+  direction:rtl;
+}
+
+.container{
+  background:#fff;
+  max-width:900px;
+  margin:auto;
+  padding:25px;
+  border-radius:12px;
+  line-height:1.6;
+}
+
+h2{ text-align:center; }
+
+input{
+  border:none;
+  border-bottom:1px solid #000;
+  padding:5px;
+  margin:5px;
+}
+
+.logo{
+  text-align:center;
+}
+
+.logo img{
+  width:120px;
+}
+
+canvas{
+  border:1px solid #ccc;
+  width:100%;
+  height:120px;
+}
+
+.buttons{
+  margin-top:20px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+button{
+  flex:1;
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.download{ background:#000; color:#fff; }
+.email{ background:#eee; }
+.whatsapp{ background:#25D366; color:#fff; }
+
+</style>
+</head>
+
+<body>
+
+<div class="container" id="contract">
+
+<div class="logo">
+<img src="logo.png">
+</div>
+
+<h2>عقد عمل</h2>
+
+<p>
+الاسم:
+<input id="employeeName">
+رقم الهوية:
+<input id="employeeId">
+</p>
+
+<p>
+الجوال:
+<input id="employeePhone">
+العنوان:
+<input id="employeeAddress">
+</p>
+
+<p>
+IBAN:
+<input id="employeeIban">
+</p>
+
+<hr>
+
+<p>المادة الأولى: يتم تعيين الموظف في وظيفة منظم فعاليات.</p>
+<p>المادة الثانية: مدة العقد شهرين.</p>
+<p>المادة الثالثة: ساعات العمل من 3:30 مساء إلى 1 صباحًا.</p>
+<p>المادة الرابعة: الأجر 133.33 ريال يوميًا.</p>
+
+<hr>
+
+<p>التوقيع:</p>
+<canvas id="sig"></canvas>
+
+</div>
+
+<div class="buttons">
+<button class="download" onclick="downloadPDF()">تحميل PDF</button>
+<button class="email" onclick="openEmail()">إرسال إيميل</button>
+<button class="whatsapp" onclick="openWhatsApp()">واتساب</button>
+</div>
+
+<script>
+
+// توقيع
+const canvas = document.getElementById("sig");
+const ctx = canvas.getContext("2d");
+let draw=false;
+
+canvas.onmousedown=()=>draw=true;
+canvas.onmouseup=()=>draw=false;
+canvas.onmousemove=e=>{
+ if(!draw) return;
+ ctx.lineWidth=2;
+ ctx.lineTo(e.offsetX,e.offsetY);
+ ctx.stroke();
+ ctx.beginPath();
+ ctx.moveTo(e.offsetX,e.offsetY);
+};
+
+// PDF
+function downloadPDF(){
+ html2pdf().from(document.getElementById("contract")).save("contract.pdf");
+}
+
+// إيميل
+const RECEIVER_EMAIL="events50sa@gmail.com";
+
+function openEmail(){
+ const name=document.getElementById("employeeName").value || "موظف";
+ const subject=encodeURIComponent("عقد موقع - "+name);
+ const body=encodeURIComponent("تم توقيع العقد\nالاسم: "+name);
+ window.location.href=`mailto:${RECEIVER_EMAIL}?subject=${subject}&body=${body}`;
+}
+
+// واتساب
+const WHATSAPP_NUMBER="9665XXXXXXXX";
+
+function openWhatsApp(){
+ const name=document.getElementById("employeeName").value || "موظف";
+ const msg=encodeURIComponent("تم توقيع العقد\nالاسم: "+name);
+ window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`);
+}
+
+</script>
+
+</body>
+</html>
