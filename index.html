@@ -9,188 +9,158 @@
 
 <style>
 body{
-  font-family: 'Tahoma';
+  font-family: 'Tajawal', sans-serif;
   background:#f5f5f5;
-  padding:20px;
+  margin:0;
   direction:rtl;
 }
 
-.container{
-  background:#fff;
+.page-wrap{
   max-width:900px;
   margin:auto;
-  padding:25px;
+  padding:15px 10px 100px;
+}
+
+.contract{
+  background:#fff;
+  padding:20px;
   border-radius:12px;
+  font-size:14px;
   line-height:1.6;
 }
 
-/* شعار */
-.logo{
-  text-align:center;
-  margin-bottom:20px;
-}
+.logo{text-align:center;}
+.logo img{width:120px;}
 
-.logo img{
-  max-width:160px;
-  filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2));
-}
-
-h2{
-  text-align:center;
-  margin-bottom:20px;
-}
+h2{text-align:center;}
+h3{margin-top:15px;}
 
 input{
-  border:none;
-  border-bottom:1px solid #000;
-  padding:5px;
-  margin:5px;
+  width:100%;
+  margin:5px 0;
+  padding:6px;
+  border:1px solid #ccc;
+  border-radius:6px;
 }
 
-/* توقيع */
 canvas{
-  border:1px solid #ccc;
   width:100%;
   height:120px;
+  border:1px dashed #aaa;
 }
 
-/* أزرار */
-.buttons{
-  margin-top:20px;
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
+.actions{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:5px;
+  background:#fff;
+  padding:10px;
 }
 
 button{
-  flex:1;
   padding:12px;
   border:none;
   border-radius:8px;
-  cursor:pointer;
-  font-size:15px;
 }
 
-.download{ background:#000; color:#fff; }
-.email{ background:#eee; }
-.whatsapp{ background:#25D366; color:#fff; }
-
+.btn-main{background:#000;color:#fff}
+.btn-soft{background:#eee}
+.whatsapp{background:#25D366;color:#fff}
 </style>
 </head>
 
 <body>
 
-<div class="container" id="contract">
+<div class="page-wrap">
 
-<!-- الشعار -->
+<div class="contract" id="contract">
+
 <div class="logo">
 <img src="logo.jpg">
 </div>
 
 <h2>عقد عمل</h2>
 
-<p>
-الاسم:
-<input id="employeeName">
-رقم الهوية:
-<input id="employeeId">
-</p>
+<p>تم الاتفاق بين الطرفين:</p>
 
-<p>
-الجوال:
-<input id="employeePhone">
-العنوان:
-<input id="employeeAddress">
-</p>
-
-<p>
-IBAN:
-<input id="employeeIban">
-</p>
+<h3>الطرف الثاني</h3>
+<input id="name" placeholder="الاسم">
+<input id="id" placeholder="رقم الهوية">
+<input id="phone" placeholder="الجوال">
+<input id="address" placeholder="العنوان">
+<input id="iban" placeholder="IBAN">
 
 <hr>
 
-<p>المادة الأولى: يتم تعيين الموظف في وظيفة منظم فعاليات.</p>
+<h3>المادة الأولى</h3>
+<p>يتم تعيين الموظف بوظيفة منظم فعاليات.</p>
 
-<p>المادة الثانية: مدة العقد شهرين.</p>
+<h3>المادة الثانية</h3>
+<p>مدة العقد شهرين.</p>
 
-<p>المادة الثالثة: ساعات العمل من 3:30 مساء إلى 1 صباحًا.</p>
+<h3>المادة الثالثة</h3>
+<p>ساعات العمل من 3:30 مساء إلى 1 صباحًا.</p>
 
-<p>المادة الرابعة: الأجر 133.33 ريال يوميًا.</p>
+<h3>المادة الرابعة</h3>
+<p>الأجر 133.33 ريال يوميًا.</p>
 
-<hr>
+<h3>المادة الخامسة</h3>
+<ul>
+<li>الالتزام بالعمل</li>
+<li>عدم الإفصاح عن الراتب</li>
+<li>في حال ترك العمل قبل انتهاء مدة العقد (شهرين) يتحمل رسوم 100 ريال</li>
+</ul>
 
-<p>التوقيع:</p>
+<h3>المادة السادسة</h3>
+<p>ينتهي العقد بانتهاء مدته.</p>
+
+<h3>المادة السابعة</h3>
+<p>يخضع لنظام العمل السعودي.</p>
+
+<h3>التوقيع</h3>
 <canvas id="sig"></canvas>
 
 </div>
 
-<!-- الأزرار -->
-<div class="buttons">
-<button class="download" onclick="downloadPDF()">تحميل PDF</button>
-<button class="email" onclick="openEmail()">إرسال إيميل</button>
+<div class="actions">
+<button class="btn-main" onclick="downloadPDF()">تحميل PDF</button>
+<button class="btn-soft" onclick="openEmail()">إيميل</button>
 <button class="whatsapp" onclick="openWhatsApp()">واتساب</button>
+</div>
+
 </div>
 
 <script>
 
 // توقيع
-const canvas = document.getElementById("sig");
-const ctx = canvas.getContext("2d");
-let draw=false;
+let c=document.getElementById("sig");
+let ctx=c.getContext("2d");
+let d=false;
 
-canvas.onmousedown=()=>draw=true;
-canvas.onmouseup=()=>draw=false;
-canvas.onmousemove=e=>{
- if(!draw) return;
- ctx.lineWidth=2;
- ctx.lineCap="round";
+c.onmousedown=()=>d=true;
+c.onmouseup=()=>d=false;
+c.onmousemove=e=>{
+ if(!d)return;
  ctx.lineTo(e.offsetX,e.offsetY);
  ctx.stroke();
- ctx.beginPath();
- ctx.moveTo(e.offsetX,e.offsetY);
 };
 
-// تحميل PDF
+// PDF
 function downloadPDF(){
- html2pdf().from(document.getElementById("contract")).save("contract.pdf");
+ html2pdf().from(document.getElementById("contract")).save();
 }
 
-// الإيميل
-const RECEIVER_EMAIL="events50sa@gmail.com";
-
+// ايميل
 function openEmail(){
- const name=document.getElementById("employeeName").value || "موظف";
-
- const subject=encodeURIComponent("عقد موقع - "+name);
-
- const body=encodeURIComponent(
-  "السلام عليكم\n\n"+
-  "تم توقيع العقد\n\n"+
-  "الاسم: "+name+"\n"+
-  "رقم الهوية: "+document.getElementById("employeeId").value+"\n"+
-  "الجوال: "+document.getElementById("employeePhone").value+"\n\n"+
-  "يرجى إرفاق ملف PDF"
- );
-
- window.location.href=`mailto:${RECEIVER_EMAIL}?subject=${subject}&body=${body}`;
+ window.location.href="mailto:events50sa@gmail.com";
 }
 
 // واتساب
-const WHATSAPP_NUMBER="9665XXXXXXXX"; // حطي رقمك
-
 function openWhatsApp(){
- const name=document.getElementById("employeeName").value || "موظف";
-
- const msg=encodeURIComponent(
-  "تم توقيع العقد\n\n"+
-  "الاسم: "+name+"\n"+
-  "رقم الهوية: "+document.getElementById("employeeId").value+"\n"+
-  "الجوال: "+document.getElementById("employeePhone").value+"\n\n"+
-  "سأرسل PDF"
- );
-
- window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`);
+ window.open("https://wa.me/9665XXXXXXXX");
 }
 
 </script>
