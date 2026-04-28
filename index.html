@@ -724,13 +724,16 @@
       if (!validateForm()) return;
       fillPdfValues();
       document.body.classList.add("pdf-mode");
+      setStatus("اختاري حفظ كـ PDF من نافذة الطباعة.", "ok");
+
       setTimeout(function () {
         window.print();
-        setTimeout(function () {
-          document.body.classList.remove("pdf-mode");
-        }, 800);
-      }, 150);
+      }, 300);
     }
+
+    window.addEventListener("afterprint", function () {
+      document.body.classList.remove("pdf-mode");
+    });
 
     async function sendAutoEmail() {
       if (!validateForm()) return;
