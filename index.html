@@ -576,7 +576,8 @@
   </div>
 
   <script>
-const RECEIVER_EMAIL = "50events.sa@gmail.com";    const form = document.getElementById("contractForm");
+    const RECEIVER_EMAIL = "50events.sa@gmail.com";
+    const form = document.getElementById("contractForm");
     const canvas = document.getElementById("signatureCanvas");
     const ctx = canvas.getContext("2d");
 
@@ -725,32 +726,32 @@ const RECEIVER_EMAIL = "50events.sa@gmail.com";    const form = document.getElem
 
       const subject = encodeURIComponent("عقد عمل موقع - " + name);
       const body = encodeURIComponent(
-        "السلام عليكم،
+  "السلام عليكم،
 
 " +
-        "مرفق لكم عقد العمل الموقع بصيغة PDF.
+  "مرفق لكم عقد العمل الموقع بصيغة PDF.
 
 " +
-        "تنبيه مهم: فضلاً أرفق ملف PDF الذي تم تحميله من زر تحميل PDF قبل إرسال الإيميل.
+  "تنبيه مهم: فضلاً أرفق ملف PDF الذي تم تحميله من زر تحميل PDF قبل إرسال الإيميل.
 
 " +
-        "بيانات الموظف:
+  "بيانات الموظف:
 " +
-        "الاسم: " + name + "
+  "الاسم: " + name + "
 " +
-        "رقم الهوية/الإقامة: " + id + "
+  "رقم الهوية/الإقامة: " + id + "
 " +
-        "رقم الجوال: " + phone + "
+  "رقم الجوال: " + phone + "
 " +
-        "العنوان: " + address + "
+  "العنوان: " + address + "
 " +
-        "الآيبان: " + iban + "
+  "الآيبان: " + iban + "
 " +
-        "تاريخ التوقيع: " + date + "
+  "تاريخ التوقيع: " + date + "
 
 " +
-        "شكرًا."
-      );
+  "شكرًا."
+);
 
       window.location.href = "mailto:" + RECEIVER_EMAIL + "?subject=" + subject + "&body=" + body;
     }
