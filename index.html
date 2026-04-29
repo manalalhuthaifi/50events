@@ -576,8 +576,7 @@
   </div>
 
   <script>
-    const RECEIVER_EMAIL = "manalalhuthaifi@gmail.com";
-    const form = document.getElementById("contractForm");
+const RECEIVER_EMAIL = "50events.sa@gmail.com";    const form = document.getElementById("contractForm");
     const canvas = document.getElementById("signatureCanvas");
     const ctx = canvas.getContext("2d");
 
@@ -589,11 +588,12 @@
       const oldImage = hasSignature ? canvas.toDataURL("image/png") : null;
       const ratio = Math.max(window.devicePixelRatio || 1, 1);
 
-      canvas.width = rect.width * ratio;
+      canvas.width = Math.max(rect.width, 300) * ratio;
       canvas.height = 145 * ratio;
+      canvas.style.height = "145px";
 
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2.2;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
       ctx.strokeStyle = "#000";
@@ -613,14 +613,15 @@
       if (signDate) signDate.valueAsDate = new Date();
     });
 
-    window.addEventListener("resize", resizeCanvas);
+    window.addEventListener("resize", function () {
+      setTimeout(resizeCanvas, 150);
+    });
 
-    function getPoint(e) {
+    function getCanvasPoint(e) {
       const rect = canvas.getBoundingClientRect();
-      const point = e.touches ? e.touches[0] : e;
       return {
-        x: point.clientX - rect.left,
-        y: point.clientY - rect.top
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
       };
     }
 
@@ -628,7 +629,8 @@
       e.preventDefault();
       isDrawing = true;
       hasSignature = true;
-      const p = getPoint(e);
+      canvas.setPointerCapture(e.pointerId);
+      const p = getCanvasPoint(e);
       ctx.beginPath();
       ctx.moveTo(p.x, p.y);
     }
@@ -636,7 +638,7 @@
     function draw(e) {
       if (!isDrawing) return;
       e.preventDefault();
-      const p = getPoint(e);
+      const p = getCanvasPoint(e);
       ctx.lineTo(p.x, p.y);
       ctx.stroke();
     }
@@ -645,16 +647,15 @@
       if (!isDrawing) return;
       e.preventDefault();
       isDrawing = false;
+      try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
       ctx.beginPath();
     }
 
-    canvas.addEventListener("mousedown", startDraw);
-    canvas.addEventListener("mousemove", draw);
-    canvas.addEventListener("mouseup", stopDraw);
-    canvas.addEventListener("mouseleave", stopDraw);
-    canvas.addEventListener("touchstart", startDraw, { passive: false });
-    canvas.addEventListener("touchmove", draw, { passive: false });
-    canvas.addEventListener("touchend", stopDraw, { passive: false });
+    canvas.addEventListener("pointerdown", startDraw);
+    canvas.addEventListener("pointermove", draw);
+    canvas.addEventListener("pointerup", stopDraw);
+    canvas.addEventListener("pointercancel", stopDraw);
+    canvas.addEventListener("pointerleave", stopDraw);
 
     document.getElementById("employeeName").addEventListener("input", function (e) {
       document.getElementById("employeeName2").value = e.target.value;
