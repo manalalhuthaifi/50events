@@ -656,34 +656,50 @@
       if (!validateForm()) return;
       fillPdfValues();
       setStatus("اختاري حفظ كـ PDF من نافذة الطباعة.", "ok");
-      setTimeout(function () { window.print(); }, 300);
+      setTimeout(function () {
+        window.print();
+      }, 300);
     }
 
-    function sendAutoEmail() {
+    function getSignatureImage() {
+      return canvas.toDataURL("image/png").split(",")[1];
+    }
+
+    async async function sendAutoEmail() {
       if (!validateForm()) return;
 
       const btn = document.getElementById("sendBtn");
       btn.disabled = true;
       btn.textContent = "جاري الإرسال...";
-      setStatus("جاري فتح رابط الإرسال...", "ok");
+      setStatus("جاري إرسال العقد...", "ok");
 
-      const params = new URLSearchParams({
+      const payload = {
         action: "sendContract",
         employeeName: document.getElementById("employeeName").value || "",
         employeeId: document.getElementById("employeeId").value || "",
         employeeAddress: document.getElementById("employeeAddress").value || "",
         employeePhone: document.getElementById("employeePhone").value || "",
         employeeIban: document.getElementById("employeeIban").value || "",
-        signDate: document.getElementById("signDate").value || ""
-      });
+        employeeName2: document.getElementById("employeeName2").value || document.getElementById("employeeName").value || "",
+        signDate: document.getElementById("signDate").value || "",
+        signatureBase64: getSignatureImage()
+      };
 
-      window.open(GOOGLE_SCRIPT_URL + "?" + params.toString(), "_blank");
+      try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
 
-      setTimeout(function () {
-        btn.disabled = false;
         btn.textContent = "تم الإرسال ✔";
-        setStatus("تم فتح صفحة الإرسال. إذا ظهرت OK فالإرسال تم.", "ok");
-      }, 2000);
+        setStatus("تم إرسال العقد. راجعي الإيميل خلال ثوانٍ.", "ok");
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = "إرسال العقد";
+        setStatus("تعذر الإرسال. تأكدي من رابط Google Apps Script.", "err");
+      }
     }
   </script>
 </body>
