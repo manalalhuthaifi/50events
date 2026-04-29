@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>عقد عمل - بوليفارد فلاورز</title>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
 
@@ -31,7 +33,7 @@
       width: 100%;
       max-width: 980px;
       margin: 0 auto;
-      padding: 18px 10px 24px;
+      padding: 18px 10px 90px;
     }
 
     .contract {
@@ -48,7 +50,7 @@
       overflow-wrap: break-word;
       direction: rtl !important;
       text-align: right !important;
-      unicode-bidi: embed;
+      unicode-bidi: plaintext;
     }
 
     .contract-header {
@@ -219,6 +221,30 @@
       box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
     }
 
+    .send-box {
+      width: 100%;
+      max-width: 794px;
+      margin: 14px auto 0;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      text-align: center;
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+    }
+
+    .send-box h3 {
+      border: 0;
+      margin: 0 0 6px;
+      font-size: 17px;
+    }
+
+    .send-box p {
+      color: #6b7280;
+      margin: 0 0 10px;
+      font-size: 13px;
+    }
+
     button {
       border: 0;
       border-radius: 10px;
@@ -230,13 +256,6 @@
     }
 
     .btn-main { background: var(--brand); color: white; }
-
-    .btn-outline {
-      background: #ffffff;
-      color: var(--brand);
-      border: 1px solid var(--brand);
-    }
-
     .btn-danger { background: #fee2e2; color: var(--danger); }
 
     .status {
@@ -265,6 +284,7 @@
 
     .pdf-mode input,
     .pdf-mode .actions,
+    .pdf-mode .send-box,
     .pdf-mode .status,
     .pdf-mode .clear-inside {
       display: none !important;
@@ -272,22 +292,88 @@
 
     .pdf-mode .pdf-only-value { display: block; }
 
+    .pdf-mode body {
+      background: #ffffff;
+      margin: 0;
+      padding: 0;
+      direction: rtl !important;
+    }
+
+    .pdf-mode .page-wrap {
+      padding: 0;
+      max-width: none;
+    }
+
+    .pdf-mode .contract {
+      width: 190mm;
+      max-width: 190mm;
+      margin: 0 auto;
+      padding: 6mm 6mm;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      font-size: 8px;
+      line-height: 1.15;
+      overflow: visible;
+      transform: scale(0.90);
+      transform-origin: top center;
+      direction: rtl !important;
+      text-align: right !important;
+      unicode-bidi: plaintext;
+    }
+
+    .pdf-mode .contract-header {
+      margin-bottom: 3px;
+      padding-bottom: 2px;
+      direction: ltr !important;
+    }
+
+    .pdf-mode .logo-header,
+    .pdf-mode .header-space { width: 82px; }
+
+    .pdf-mode .logo-header img {
+      width: 68px !important;
+      max-height: 45px !important;
+    }
+
+    .pdf-mode .contract-title { font-size: 15px; }
+
+    .pdf-mode h3 {
+      font-size: 8.5px;
+      margin: 3px 0 1px;
+      padding-bottom: 1px;
+    }
+
+    .pdf-mode p { margin: 1px 0; }
+
+    .pdf-mode .party-box {
+      padding: 2px 4px;
+      margin: 2px 0;
+      border-radius: 5px;
+    }
+
+    .pdf-mode .party-title { margin-bottom: 1px; }
+
+    .pdf-mode .grid { gap: 3px; margin: 1px 0; }
+    .pdf-mode label { font-size: 8px; margin-bottom: 0; }
+    .pdf-mode .pdf-only-value { min-height: 14px; padding: 0 3px; }
+    .pdf-mode .article-list { padding-right: 10px; margin: 1px 0 2px; }
+    .pdf-mode .article-list li { margin-bottom: 0; line-height: 1.1; }
+    .pdf-mode .signatures { margin-top: 4px; gap: 5px; }
+    .pdf-mode .signature-card { padding: 3px; border-radius: 5px; }
+    .pdf-mode .signature-card h4 { font-size: 8.5px; margin: 0 0 1px; }
+    .pdf-mode .signature-line { min-height: 14px; margin: 1px 0 2px; }
+    .pdf-mode .signature-area { margin-top: 1px; }
+    .pdf-mode canvas { height: 40px; }
+
     @page { size: A4; margin: 6mm; }
 
     @media print {
-      body {
-        background: #ffffff !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        direction: rtl !important;
-        text-align: right !important;
-      }
-
-      .page-wrap {
-        padding: 0 !important;
-        max-width: none !important;
-      }
-
+      body { background: #ffffff !important; }
+      .page-wrap { padding: 0 !important; max-width: none !important; }
+      .actions, .send-box, .status, .clear-inside { display: none !important; }
+      input { display: none !important; }
+      .pdf-only-value { display: block !important; }
       .contract {
         width: 190mm !important;
         max-width: 190mm !important;
@@ -300,101 +386,26 @@
         line-height: 1.1 !important;
         direction: rtl !important;
         text-align: right !important;
-        unicode-bidi: embed !important;
       }
-
-      .contract-header {
-        margin-bottom: 3px !important;
-        padding-bottom: 2px !important;
-        direction: ltr !important;
-      }
-
-      .logo-header,
-      .header-space { width: 82px !important; }
-
-      .logo-header img {
-        width: 68px !important;
-        max-height: 45px !important;
-      }
-
-      .contract-title {
-        font-size: 15px !important;
-        direction: rtl !important;
-      }
-
-      h3 {
-        font-size: 8.5px !important;
-        margin: 3px 0 1px !important;
-        padding-bottom: 1px !important;
-      }
-
+      .contract-header { margin-bottom: 3px !important; padding-bottom: 2px !important; direction: ltr !important; }
+      .logo-header, .header-space { width: 82px !important; }
+      .logo-header img { width: 68px !important; max-height: 45px !important; }
+      .contract-title { font-size: 15px !important; direction: rtl !important; }
+      h3 { font-size: 8.5px !important; margin: 3px 0 1px !important; padding-bottom: 1px !important; }
       p { margin: 1px 0 !important; }
-
-      .party-box {
-        padding: 2px 4px !important;
-        margin: 2px 0 !important;
-        border-radius: 5px !important;
-      }
-
+      .party-box { padding: 2px 4px !important; margin: 2px 0 !important; border-radius: 5px !important; }
       .party-title { margin-bottom: 1px !important; }
-
-      .grid {
-        gap: 3px !important;
-        margin: 1px 0 !important;
-      }
-
-      label {
-        font-size: 8px !important;
-        margin-bottom: 0 !important;
-      }
-
-      .pdf-only-value {
-        min-height: 14px !important;
-        padding: 0 3px !important;
-      }
-
-      .article-list {
-        padding-right: 10px !important;
-        margin: 1px 0 2px !important;
-      }
-
-      .article-list li {
-        margin-bottom: 0 !important;
-        line-height: 1.08 !important;
-      }
-
-      .signatures {
-        margin-top: 4px !important;
-        gap: 5px !important;
-      }
-
-      .signature-card {
-        padding: 3px !important;
-        border-radius: 5px !important;
-      }
-
-      .signature-card h4 {
-        font-size: 8.5px !important;
-        margin: 0 0 1px !important;
-      }
-
-      .signature-line {
-        min-height: 14px !important;
-        margin: 1px 0 2px !important;
-      }
-
+      .grid { gap: 3px !important; margin: 1px 0 !important; }
+      label { font-size: 8px !important; margin-bottom: 0 !important; }
+      .pdf-only-value { min-height: 14px !important; padding: 0 3px !important; }
+      .article-list { padding-right: 10px !important; margin: 1px 0 2px !important; }
+      .article-list li { margin-bottom: 0 !important; line-height: 1.08 !important; }
+      .signatures { margin-top: 4px !important; gap: 5px !important; }
+      .signature-card { padding: 3px !important; border-radius: 5px !important; }
+      .signature-card h4 { font-size: 8.5px !important; margin: 0 0 1px !important; }
+      .signature-line { min-height: 14px !important; margin: 1px 0 2px !important; }
       .signature-area { margin-top: 1px !important; }
-
       canvas { height: 40px !important; }
-
-      .actions,
-      .status,
-      .clear-inside {
-        display: none !important;
-      }
-
-      input { display: none !important; }
-      .pdf-only-value { display: block !important; }
     }
 
     @media (max-width: 720px) {
@@ -409,7 +420,6 @@
     }
   </style>
 </head>
-
 <body>
   <div class="page-wrap">
     <form id="contractForm" class="contract">
@@ -440,25 +450,21 @@
             <input id="employeeName" name="employeeName" required placeholder="اكتب الاسم الكامل" />
             <div class="pdf-only-value" data-for="employeeName"></div>
           </div>
-
           <div>
             <label for="employeeId">رقم الهوية/الإقامة</label>
             <input id="employeeId" name="employeeId" required placeholder="رقم الهوية أو الإقامة" />
             <div class="pdf-only-value" data-for="employeeId"></div>
           </div>
-
           <div>
             <label for="employeeAddress">العنوان</label>
             <input id="employeeAddress" name="employeeAddress" required placeholder="العنوان" />
             <div class="pdf-only-value" data-for="employeeAddress"></div>
           </div>
-
           <div>
             <label for="employeePhone">رقم الجوال</label>
             <input id="employeePhone" name="employeePhone" required placeholder="05xxxxxxxx" />
             <div class="pdf-only-value" data-for="employeePhone"></div>
           </div>
-
           <div style="grid-column: 1 / -1;">
             <label for="employeeIban">الحساب البنكي (الآيبان)</label>
             <input id="employeeIban" name="employeeIban" required placeholder="SAxxxxxxxxxxxxxxxxxxxxxx" />
@@ -519,7 +525,6 @@
 
         <div class="signature-card">
           <h4>الطرف الثاني (الموظف)</h4>
-
           <label for="employeeName2">الاسم</label>
           <input id="employeeName2" name="employeeName2" placeholder="يظهر تلقائيًا أو اكتب الاسم" />
           <div class="pdf-only-value" data-for="employeeName2"></div>
@@ -537,18 +542,26 @@
       </div>
     </form>
 
+    <div class="send-box">
+      <h3>إرسال العقد</h3>
+      <p>بعد تعبئة البيانات والتوقيع اضغط زر الإرسال ليتم إرسال العقد إلى الإيميل.</p>
+      <button class="btn-main" type="button" onclick="sendAutoEmail()">إرسال العقد الآن</button>
+    </div>
+
     <div class="actions">
-      <button class="btn-main" type="button" onclick="sendAutoEmail()">إرسال العقد</button>
-      <button class="btn-outline" type="button" onclick="downloadPDF()">تحميل PDF</button>
+      <button class="btn-main" type="button" onclick="downloadPDF()">تحميل PDF جاهز</button>
+      <button class="btn-main" type="button" onclick="sendAutoEmail()">إرسال تلقائي</button>
     </div>
 
     <div id="status" class="status"></div>
   </div>
 
   <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwD6g_0hu99nBF9FxzuEk837F_ZSiDcN5Yd9b0ggyhsSj-VFuv915FNIsDHylwWnzFA/exec";
+    const RECEIVER_EMAIL = "manalalhuthaifi@gmail.com";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby0SYT-rvNsSFGcBGemuDV1PfLUcxpH2KTI-P7ii6BTNIcMHE9mJBA91xcgxLRfDWY/exec";
 
     const form = document.getElementById("contractForm");
+    const contractElement = document.querySelector(".contract");
     const canvas = document.getElementById("signatureCanvas");
     const ctx = canvas.getContext("2d");
 
@@ -559,21 +572,16 @@
       const rect = canvas.getBoundingClientRect();
       const oldImage = hasSignature ? canvas.toDataURL() : null;
       const ratio = Math.max(window.devicePixelRatio || 1, 1);
-
       canvas.width = rect.width * ratio;
       canvas.height = 145 * ratio;
-
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
       ctx.lineWidth = 2;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
       ctx.strokeStyle = "#000";
-
       if (oldImage) {
         const img = new Image();
-        img.onload = function () {
-          ctx.drawImage(img, 0, 0, rect.width, 145);
-        };
+        img.onload = function () { ctx.drawImage(img, 0, 0, rect.width, 145); };
         img.src = oldImage;
       }
     }
@@ -589,10 +597,7 @@
     function getPoint(e) {
       const rect = canvas.getBoundingClientRect();
       const point = e.touches ? e.touches[0] : e;
-      return {
-        x: point.clientX - rect.left,
-        y: point.clientY - rect.top
-      };
+      return { x: point.clientX - rect.left, y: point.clientY - rect.top };
     }
 
     function startDraw(e) {
@@ -623,7 +628,6 @@
     canvas.addEventListener("mousemove", draw);
     canvas.addEventListener("mouseup", stopDraw);
     canvas.addEventListener("mouseleave", stopDraw);
-
     canvas.addEventListener("touchstart", startDraw, { passive: false });
     canvas.addEventListener("touchmove", draw, { passive: false });
     canvas.addEventListener("touchend", stopDraw, { passive: false });
@@ -647,7 +651,6 @@
       document.querySelectorAll(".pdf-only-value").forEach(function (el) {
         const field = document.getElementById(el.dataset.for);
         if (!field) return;
-
         if (field.type === "date" && field.value) {
           el.textContent = field.value.split("-").reverse().join(" / ");
         } else {
@@ -658,29 +661,58 @@
 
     function validateForm() {
       if (!form.reportValidity()) return false;
-
       if (!hasSignature) {
         setStatus("فضلاً أضيفي توقيع الموظف قبل الإرسال.", "err");
         return false;
       }
-
       return true;
+    }
+
+    function getPdfOptions() {
+      return {
+        margin: [6, 6, 6, 6],
+        filename: "عقد_عمل_موقع.pdf",
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          scrollY: 0,
+          letterRendering: true,
+          logging: false,
+          backgroundColor: "#ffffff"
+        },
+        jsPDF: {
+          unit: "mm",
+          format: "a4",
+          orientation: "portrait",
+          compress: true
+        },
+        pagebreak: {
+          mode: ["avoid-all"]
+        }
+      };
+    }
+
+    function getSignatureImage() {
+      return canvas.toDataURL("image/png").split(",")[1];
     }
 
     function downloadPDF() {
       if (!validateForm()) return;
-
       fillPdfValues();
-
+      document.body.classList.add("pdf-mode");
       setStatus("اختاري حفظ كـ PDF من نافذة الطباعة.", "ok");
-
-      setTimeout(function () {
-        window.print();
-      }, 300);
+      setTimeout(function () { window.print(); }, 300);
     }
+
+    window.addEventListener("afterprint", function () {
+      document.body.classList.remove("pdf-mode");
+    });
 
     function sendAutoEmail() {
       if (!validateForm()) return;
+
+      setStatus("جاري فتح رابط الإرسال...", "ok");
 
       const params = new URLSearchParams({
         action: "sendContract",
@@ -692,8 +724,8 @@
         signDate: document.getElementById("signDate").value || ""
       });
 
-      setStatus("تم فتح صفحة الإرسال. إذا ظهرت OK فالإرسال تم.", "ok");
       window.open(GOOGLE_SCRIPT_URL + "?" + params.toString(), "_blank");
+      setStatus("تم فتح رابط الإرسال. إذا ظهرت صفحة OK فالإرسال تم.", "ok");
     }
   </script>
 </body>
