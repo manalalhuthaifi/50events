@@ -21,31 +21,31 @@ body{
   margin:auto;
   background:#fff;
   padding:20px;
+  line-height:1.6;
 }
 
-/* 👇 أهم شيء لضغط الصفحة */
+/* ضغط تلقائي */
 .pdf-mode .contract{
   transform:scale(0.82);
   transform-origin:top center;
   font-size:8px;
-  line-height:1.1;
+  line-height:1.2;
 }
 
 header{
   display:flex;
   justify-content:space-between;
   direction:ltr;
+  margin-bottom:15px;
 }
 
-h2{
-  text-align:center;
-}
+h2{text-align:center;}
 
 canvas{
   width:100%;
   height:120px;
   border:1px dashed #999;
-  touch-action:none;
+  margin-top:10px;
 }
 
 button{
@@ -66,63 +66,80 @@ button{
 <div></div>
 </header>
 
-<input id="employeeName" placeholder="الاسم">
-<input id="employeeId" placeholder="الهوية">
+<p>إنه في يوم ______ تم الاتفاق بين:</p>
 
-<p>التوقيع:</p>
+<p><b>الطرف الأول:</b> مؤسسة خمسون فعالية لتنظيم الحشود</p>
+
+<p><b>الطرف الثاني:</b></p>
+<input id="employeeName" placeholder="الاسم">
+<input id="employeeId" placeholder="رقم الهوية">
+<input id="employeePhone" placeholder="الجوال">
+
+<h3>المادة الأولى</h3>
+<p>تعيين الموظف للعمل في تنظيم الفعاليات.</p>
+
+<h3>المادة الثانية</h3>
+<p>مدة العقد شهرين.</p>
+
+<h3>المادة الثالثة</h3>
+<p>ساعات العمل من 3:30 مساءً إلى 1 صباحًا.</p>
+
+<h3>المادة الرابعة</h3>
+<p>الأجر اليومي 133.33 ريال.</p>
+
+<h3>المادة الخامسة</h3>
+<ul>
+<li>الالتزام بالعمل</li>
+<li>عدم الإفصاح عن الراتب</li>
+<li>غرامة ترك العمل 100 ريال</li>
+<li>خصم عند الغياب</li>
+</ul>
+
+<h3>التوقيع</h3>
+
 <canvas id="signatureCanvas"></canvas>
 
-<button onclick="clearSignature()">مسح</button>
+<button onclick="clearSignature()">مسح التوقيع</button>
 <button onclick="downloadPDF()">تحميل PDF</button>
 <button onclick="sendAutoEmail()">إرسال تلقائي</button>
 
 </div>
 
 <script>
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx0vMZyhVFS5plHnskziYEzXp4v8aCWXkDIXWBegKhxnGdA-_qba3MCVNUBC4NDm3U62Q/exec";
+const GOOGLE_SCRIPT_URL="https://script.google.com/macros/s/AKfycbx0vMZyhVFS5plHnskziYEzXp4v8aCWXkDIXWBegKhxnGdA-_qba3MCVNUBC4NDm3U62Q/exec";
 
-const canvas = document.getElementById("signatureCanvas");
-const ctx = canvas.getContext("2d");
+const canvas=document.getElementById("signatureCanvas");
+const ctx=canvas.getContext("2d");
 
 let drawing=false;
 
-function resizeCanvas(){
+function resize(){
   canvas.width=canvas.offsetWidth;
   canvas.height=120;
 }
+resize();
 
-resizeCanvas();
-
-function getPos(e){
-  const rect=canvas.getBoundingClientRect();
+function pos(e){
+  const r=canvas.getBoundingClientRect();
   const p=e.touches?e.touches[0]:e;
-  return {x:p.clientX-rect.left,y:p.clientY-rect.top};
+  return {x:p.clientX-r.left,y:p.clientY-r.top};
 }
 
-function start(e){
+canvas.onmousedown=e=>{
   drawing=true;
-  const p=getPos(e);
+  let p=pos(e);
   ctx.beginPath();
   ctx.moveTo(p.x,p.y);
-}
+};
 
-function move(e){
+canvas.onmousemove=e=>{
   if(!drawing)return;
-  const p=getPos(e);
+  let p=pos(e);
   ctx.lineTo(p.x,p.y);
   ctx.stroke();
-}
+};
 
-function end(){
-  drawing=false;
-}
-
-canvas.addEventListener("mousedown",start);
-canvas.addEventListener("mousemove",move);
-canvas.addEventListener("mouseup",end);
-canvas.addEventListener("touchstart",start);
-canvas.addEventListener("touchmove",move);
-canvas.addEventListener("touchend",end);
+canvas.onmouseup=()=>drawing=false;
 
 function clearSignature(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -130,9 +147,7 @@ function clearSignature(){
 
 function downloadPDF(){
   document.body.classList.add("pdf-mode");
-
   html2pdf().from(document.getElementById("contract")).save();
-
   setTimeout(()=>document.body.classList.remove("pdf-mode"),1000);
 }
 
@@ -140,7 +155,7 @@ async function sendAutoEmail(){
 
   document.body.classList.add("pdf-mode");
 
-  const pdfBlob = await html2pdf()
+  const pdfBlob=await html2pdf()
     .from(document.getElementById("contract"))
     .outputPdf("blob");
 
@@ -148,8 +163,7 @@ async function sendAutoEmail(){
 
   const reader=new FileReader();
 
-  reader.onloadend=async function(){
-
+  reader.onloadend=async ()=>{
     const base64=reader.result.split(",")[1];
 
     await fetch(GOOGLE_SCRIPT_URL,{
@@ -160,12 +174,13 @@ async function sendAutoEmail(){
       body:JSON.stringify({
         employeeName:document.getElementById("employeeName").value,
         employeeId:document.getElementById("employeeId").value,
+        employeePhone:document.getElementById("employeePhone").value,
         fileName:"contract.pdf",
         pdfBase64:base64
       })
     });
 
-    alert("تم الإرسال بنجاح 🔥");
+    alert("تم الإرسال 🔥");
   };
 
   reader.readAsDataURL(pdfBlob);
