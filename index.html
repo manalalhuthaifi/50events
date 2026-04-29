@@ -13,7 +13,6 @@
       --line: #d1d5db;
       --brand: #111827;
       --danger: #dc2626;
-      --ok: #166534;
     }
 
     * { box-sizing: border-box; }
@@ -243,16 +242,13 @@
       cursor: pointer;
     }
 
-    .btn-main {
-      background: var(--brand);
-      color: #ffffff;
+    button:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
     }
 
-    .btn-outline {
-      background: #ffffff;
-      color: var(--brand);
-      border: 1px solid var(--brand);
-    }
+    .btn-main { background: var(--brand); color: #ffffff; }
+    .btn-outline { background: #ffffff; color: var(--brand); border: 1px solid var(--brand); }
 
     .status {
       display: none;
@@ -296,6 +292,7 @@
     }
 
     .pdf-mode .pdf-only-value { display: block; }
+    .pdf-mode #signatureCanvas { height: 50px !important; }
 
     @page { size: A4; margin: 6mm; }
 
@@ -458,39 +455,33 @@
 
       <div class="party-box">
         <div class="party-title">الطرف الثاني:</div>
-
         <div class="grid">
           <div>
             <label for="employeeName">الاسم</label>
             <input id="employeeName" name="employeeName" required placeholder="اكتب الاسم الكامل" />
             <div class="pdf-only-value" data-for="employeeName"></div>
           </div>
-
           <div>
             <label for="employeeId">رقم الهوية/الإقامة</label>
             <input id="employeeId" name="employeeId" required placeholder="رقم الهوية أو الإقامة" />
             <div class="pdf-only-value" data-for="employeeId"></div>
           </div>
-
           <div>
             <label for="employeeAddress">العنوان</label>
             <input id="employeeAddress" name="employeeAddress" required placeholder="العنوان" />
             <div class="pdf-only-value" data-for="employeeAddress"></div>
           </div>
-
           <div>
             <label for="employeePhone">رقم الجوال</label>
             <input id="employeePhone" name="employeePhone" required placeholder="05xxxxxxxx" />
             <div class="pdf-only-value" data-for="employeePhone"></div>
           </div>
-
           <div style="grid-column: 1 / -1;">
             <label for="employeeIban">الحساب البنكي (الآيبان)</label>
             <input id="employeeIban" name="employeeIban" required placeholder="SAxxxxxxxxxxxxxxxxxxxxxx" />
             <div class="pdf-only-value" data-for="employeeIban"></div>
           </div>
         </div>
-
         <p>ويُشار إليه في هذا العقد بـ ”الموظف“.</p>
       </div>
 
@@ -545,7 +536,6 @@
 
         <div class="signature-card">
           <h4>الطرف الثاني (الموظف)</h4>
-
           <label for="employeeName2">الاسم</label>
           <input id="employeeName2" name="employeeName2" placeholder="يظهر تلقائيًا أو اكتب الاسم" />
           <div class="pdf-only-value" data-for="employeeName2"></div>
@@ -580,8 +570,7 @@
     const form = document.getElementById("contractForm");
     const canvas = document.getElementById("signatureCanvas");
     const ctx = canvas.getContext("2d");
-
-    let isDrawing = false;
+    let drawing = false;
     let hasSignature = false;
 
     function resizeCanvas() {
@@ -589,12 +578,12 @@
       const oldImage = hasSignature ? canvas.toDataURL("image/png") : null;
       const ratio = Math.max(window.devicePixelRatio || 1, 1);
 
-      canvas.width = Math.max(rect.width, 300) * ratio;
+      canvas.width = rect.width * ratio;
       canvas.height = 145 * ratio;
       canvas.style.height = "145px";
 
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-      ctx.lineWidth = 2.2;
+      ctx.lineWidth = 2.4;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
       ctx.strokeStyle = "#000";
@@ -618,8 +607,14 @@
       setTimeout(resizeCanvas, 150);
     });
 
-    function getCanvasPoint(e) {
+    function getPos(e) {
       const rect = canvas.getBoundingClientRect();
+      if (e.touches && e.touches.length > 0) {
+        return {
+          x: e.touches[0].clientX - rect.left,
+          y: e.touches[0].clientY - rect.top
+        };
+      }
       return {
         x: e.clientX - rect.left,
         y: e.clientY - rect.top
@@ -627,36 +622,47 @@
     }
 
     function startDraw(e) {
-      e.preventDefault();
-      isDrawing = true;
+      drawing = true;
       hasSignature = true;
-      canvas.setPointerCapture(e.pointerId);
-      const p = getCanvasPoint(e);
+      const p = getPos(e);
       ctx.beginPath();
       ctx.moveTo(p.x, p.y);
     }
 
     function draw(e) {
-      if (!isDrawing) return;
-      e.preventDefault();
-      const p = getCanvasPoint(e);
+      if (!drawing) return;
+      const p = getPos(e);
       ctx.lineTo(p.x, p.y);
       ctx.stroke();
     }
 
-    function stopDraw(e) {
-      if (!isDrawing) return;
-      e.preventDefault();
-      isDrawing = false;
-      try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+    function stopDraw() {
+      drawing = false;
       ctx.beginPath();
     }
 
-    canvas.addEventListener("pointerdown", startDraw);
-    canvas.addEventListener("pointermove", draw);
-    canvas.addEventListener("pointerup", stopDraw);
-    canvas.addEventListener("pointercancel", stopDraw);
-    canvas.addEventListener("pointerleave", stopDraw);
+    canvas.addEventListener("mousedown", function (e) {
+      startDraw(e);
+    });
+    canvas.addEventListener("mousemove", function (e) {
+      draw(e);
+    });
+    canvas.addEventListener("mouseup", stopDraw);
+    canvas.addEventListener("mouseleave", stopDraw);
+
+    canvas.addEventListener("touchstart", function (e) {
+      e.preventDefault();
+      startDraw(e);
+    }, { passive: false });
+
+    canvas.addEventListener("touchmove", function (e) {
+      e.preventDefault();
+      draw(e);
+    }, { passive: false });
+
+    canvas.addEventListener("touchend", function () {
+      stopDraw();
+    });
 
     document.getElementById("employeeName").addEventListener("input", function (e) {
       document.getElementById("employeeName2").value = e.target.value;
@@ -692,7 +698,7 @@
     function validateForm() {
       if (!form.reportValidity()) return false;
       if (!hasSignature) {
-        setStatus("فضلاً أضيفي توقيع الموظف قبل تحميل العقد أو إرساله.", "err");
+        setStatus("فضلاً أضف توقيع الموظف قبل تحميل العقد أو إرساله.", "err");
         return false;
       }
       return true;
@@ -703,7 +709,7 @@
 
       fillPdfValues();
       document.body.classList.add("pdf-mode");
-      setStatus("من نافذة الطباعة اختاري حفظ كـ PDF.", "ok");
+      setStatus("من نافذة الطباعة اختَر حفظ كـ PDF.", "ok");
 
       setTimeout(function () {
         window.print();
@@ -726,32 +732,32 @@
 
       const subject = encodeURIComponent("عقد عمل موقع - " + name);
       const body = encodeURIComponent(
-  "السلام عليكم،
+        "السلام عليكم،
 
 " +
-  "مرفق لكم عقد العمل الموقع بصيغة PDF.
+        "مرفق لكم عقد العمل الموقع بصيغة PDF.
 
 " +
-  "تنبيه مهم: فضلاً أرفق ملف PDF الذي تم تحميله من زر تحميل PDF قبل إرسال الإيميل.
+        "تنبيه مهم: فضلاً أرفق ملف PDF الذي تم تحميله من زر تحميل PDF قبل إرسال الإيميل.
 
 " +
-  "بيانات الموظف:
+        "بيانات الموظف:
 " +
-  "الاسم: " + name + "
+        "الاسم: " + name + "
 " +
-  "رقم الهوية/الإقامة: " + id + "
+        "رقم الهوية/الإقامة: " + id + "
 " +
-  "رقم الجوال: " + phone + "
+        "رقم الجوال: " + phone + "
 " +
-  "العنوان: " + address + "
+        "العنوان: " + address + "
 " +
-  "الآيبان: " + iban + "
+        "الآيبان: " + iban + "
 " +
-  "تاريخ التوقيع: " + date + "
+        "تاريخ التوقيع: " + date + "
 
 " +
-  "شكرًا."
-);
+        "شكرًا."
+      );
 
       window.location.href = "mailto:" + RECEIVER_EMAIL + "?subject=" + subject + "&body=" + body;
     }
