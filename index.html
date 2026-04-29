@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -13,12 +14,17 @@
       --line: #d1d5db;
       --brand: #111827;
       --danger: #dc2626;
+      --success: #166534;
+      --warning-bg: #fff7ed;
+      --warning-text: #9a3412;
+      --warning-line: #fed7aa;
     }
 
     * { box-sizing: border-box; }
 
-    body {
+    html, body {
       margin: 0;
+      padding: 0;
       background: #f3f4f6;
       color: var(--ink);
       font-family: "Tajawal", Arial, sans-serif;
@@ -161,13 +167,15 @@
     }
 
     .signature-card {
+      position: relative;
+      z-index: 1;
       border: 1px solid var(--line);
       border-radius: 12px;
       padding: 10px;
       background: #ffffff;
       break-inside: avoid;
       page-break-inside: avoid;
-      overflow: hidden;
+      overflow: visible !important;
     }
 
     .signature-card h4 {
@@ -183,19 +191,27 @@
       padding: 3px;
     }
 
-    .signature-area { margin-top: 7px; }
+    .signature-area {
+      position: relative;
+      margin-top: 7px;
+      z-index: 2;
+    }
 
-    canvas {
+    #signatureCanvas {
       width: 100%;
       height: 145px;
-      border: 1.5px dashed #9ca3af;
+      border: 2px dashed #9ca3af;
       border-radius: 10px;
       background: #ffffff;
       display: block;
       touch-action: none !important;
+      -ms-touch-action: none !important;
       -webkit-user-select: none;
       user-select: none;
       cursor: crosshair;
+      pointer-events: auto !important;
+      position: relative;
+      z-index: 10;
     }
 
     .clear-inside {
@@ -225,9 +241,9 @@
       width: 100%;
       max-width: 794px;
       margin: 12px auto 0;
-      background: #fff7ed;
-      color: #9a3412;
-      border: 1px solid #fed7aa;
+      background: var(--warning-bg);
+      color: var(--warning-text);
+      border: 1px solid var(--warning-line);
       border-radius: 12px;
       padding: 12px;
       font-weight: 700;
@@ -265,7 +281,7 @@
       font-size: 13px;
     }
 
-    .status.ok { display: block; background: #dcfce7; color: #166534; }
+    .status.ok { display: block; background: #dcfce7; color: var(--success); }
     .status.err { display: block; background: #fee2e2; color: #991b1b; }
 
     .pdf-only-value {
@@ -295,7 +311,6 @@
     }
 
     .pdf-mode .pdf-only-value { display: block; }
-    .pdf-mode #signatureCanvas { height: 50px !important; }
 
     @page { size: A4; margin: 6mm; }
 
@@ -418,7 +433,7 @@
       }
 
       .signature-area { margin-top: 1px !important; }
-      canvas { height: 50px !important; }
+      #signatureCanvas { height: 50px !important; }
     }
 
     @media (max-width: 720px) {
@@ -573,71 +588,80 @@
     const form = document.getElementById("contractForm");
     const canvas = document.getElementById("signatureCanvas");
     const ctx = canvas.getContext("2d");
-    let drawing = false;
+    let isDrawing = false;
     let hasSignature = false;
 
-    function setupCanvas() {
+    function setCanvasSize() {
       const rect = canvas.getBoundingClientRect();
-      const scale = window.devicePixelRatio || 1;
+      const ratio = window.devicePixelRatio || 1;
+      const saved = hasSignature ? canvas.toDataURL("image/png") : null;
 
-      canvas.width = rect.width * scale;
-      canvas.height = 145 * scale;
-      canvas.style.width = "100%";
-      canvas.style.height = "145px";
-
-      ctx.setTransform(scale, 0, 0, scale, 0, 0);
+      canvas.width = Math.max(rect.width, 300) * ratio;
+      canvas.height = 145 * ratio;
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
       ctx.lineWidth = 2.5;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
-      ctx.strokeStyle = "#000000";
+      ctx.strokeStyle = "#000";
+
+      if (saved) {
+        const img = new Image();
+        img.onload = function () {
+          ctx.drawImage(img, 0, 0, rect.width, 145);
+        };
+        img.src = saved;
+      }
     }
 
-    window.addEventListener("load", function () {
-      setupCanvas();
-      const signDate = document.getElementById("signDate");
-      if (signDate) signDate.valueAsDate = new Date();
-    });
-
-    window.addEventListener("resize", setupCanvas);
-
-    function canvasPoint(event) {
+    function getPoint(e) {
       const rect = canvas.getBoundingClientRect();
-      const p = event.touches && event.touches.length ? event.touches[0] : event;
+      const point = e.touches && e.touches.length ? e.touches[0] : e;
       return {
-        x: p.clientX - rect.left,
-        y: p.clientY - rect.top
+        x: point.clientX - rect.left,
+        y: point.clientY - rect.top
       };
     }
 
-    function beginSignature(event) {
-      event.preventDefault();
-      drawing = true;
+    function startSignature(e) {
+      e.preventDefault();
+      isDrawing = true;
       hasSignature = true;
-      const p = canvasPoint(event);
+      const p = getPoint(e);
       ctx.beginPath();
       ctx.moveTo(p.x, p.y);
     }
 
-    function moveSignature(event) {
-      if (!drawing) return;
-      event.preventDefault();
-      const p = canvasPoint(event);
+    function drawSignature(e) {
+      if (!isDrawing) return;
+      e.preventDefault();
+      const p = getPoint(e);
       ctx.lineTo(p.x, p.y);
       ctx.stroke();
     }
 
-    function endSignature(event) {
-      if (event) event.preventDefault();
-      drawing = false;
+    function endSignature(e) {
+      if (e) e.preventDefault();
+      isDrawing = false;
       ctx.beginPath();
     }
 
-    canvas.addEventListener("mousedown", beginSignature);
-    canvas.addEventListener("mousemove", moveSignature);
-    document.addEventListener("mouseup", endSignature);
+    window.addEventListener("load", function () {
+      setCanvasSize();
+      const signDate = document.getElementById("signDate");
+      if (signDate) signDate.valueAsDate = new Date();
+    });
 
-    canvas.addEventListener("touchstart", beginSignature, { passive: false });
-    canvas.addEventListener("touchmove", moveSignature, { passive: false });
+    window.addEventListener("resize", function () {
+      setTimeout(setCanvasSize, 150);
+    });
+
+    canvas.addEventListener("mousedown", startSignature);
+    canvas.addEventListener("mousemove", drawSignature);
+    document.addEventListener("mouseup", endSignature);
+    canvas.addEventListener("mouseleave", endSignature);
+
+    canvas.addEventListener("touchstart", startSignature, { passive: false });
+    canvas.addEventListener("touchmove", drawSignature, { passive: false });
     canvas.addEventListener("touchend", endSignature, { passive: false });
     canvas.addEventListener("touchcancel", endSignature, { passive: false });
 
@@ -683,11 +707,9 @@
 
     function downloadPDF() {
       if (!validateForm()) return;
-
       fillPdfValues();
       document.body.classList.add("pdf-mode");
       setStatus("من نافذة الطباعة اختَر حفظ كـ PDF.", "ok");
-
       setTimeout(function () {
         window.print();
       }, 300);
@@ -706,7 +728,6 @@
       const address = document.getElementById("employeeAddress").value || "-";
       const iban = document.getElementById("employeeIban").value || "-";
       const date = document.getElementById("signDate").value || "-";
-
       const subject = encodeURIComponent("عقد عمل موقع - " + name);
       const body = encodeURIComponent(
         "السلام عليكم،
