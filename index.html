@@ -283,17 +283,15 @@
     }
 
     .pdf-mode .contract {
-      direction: rtl;
-      unicode-bidi: embed;
       width: 190mm;
       max-width: 190mm;
       margin: 0 auto;
-      padding: 6mm 7mm 7mm;
+      padding: 4mm 5mm;
       border: none;
       border-radius: 0;
       box-shadow: none;
-      font-size: 9.8px;
-      line-height: 1.23;
+      font-size: 7.8px; /* تصغير قوي */
+      line-height: 1.1;
       overflow: visible;
     }
 
@@ -317,12 +315,12 @@
     }
 
     .pdf-mode h3 {
-      font-size: 11px;
-      margin: 5px 0 1px;
+      font-size: 8.5px;
+      margin: 3px 0 1px;
       padding-bottom: 1px;
     }
 
-    .pdf-mode p { margin: 1.5px 0; }
+    .pdf-mode p { margin: 1px 0; }
 
     .pdf-mode .party-box {
       padding: 3px 5px;
@@ -363,8 +361,8 @@
     }
 
     .pdf-mode .signature-card {
-      padding: 5px;
-      border-radius: 7px;
+      padding: 3px;
+      border-radius: 5px;
     }
 
     .pdf-mode .signature-card h4 {
@@ -379,7 +377,7 @@
 
     .pdf-mode .signature-area { margin-top: 2px; }
 
-    .pdf-mode canvas { height: 55px; }
+    .pdf-mode canvas { height: 40px; }
 
     @page {
       size: A4;
@@ -571,7 +569,7 @@
 
   <script>
     const RECEIVER_EMAIL = "50events.sa@gmail.com";
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxbo9k5zROvsgwLXg_suWdj4iuhW1QteFbb7OuHJEl8y7UxmcD3sH5l2TRzrtF8PDk0Fg/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwB1RoEXsAhFlM3_qNrpZR5yowFWjFPKDUlDulj7qBP4P38DHpbSouuTbXIcAd6FKexrg/exec";
 
     const form = document.getElementById("contractForm");
     const contractElement = document.querySelector(".contract");
