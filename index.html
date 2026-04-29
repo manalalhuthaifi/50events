@@ -708,32 +708,46 @@
       document.body.classList.remove("pdf-mode");
     });
 
-    async function sendAutoEmail() {
-      if (!validateForm()) return;
+   function sendAutoEmail() {
+  if (!validateForm()) return;
 
-      try {
-        setStatus("جاري إرسال العقد...", "ok");
+  setStatus("جاري إرسال العقد...", "ok");
 
-        const payload = {
-          to: RECEIVER_EMAIL,
-          employeeName: document.getElementById("employeeName").value || "موظف",
-          employeeId: document.getElementById("employeeId").value || "",
-          employeeAddress: document.getElementById("employeeAddress").value || "",
-          employeePhone: document.getElementById("employeePhone").value || "",
-          employeeIban: document.getElementById("employeeIban").value || "",
-          employeeName2: document.getElementById("employeeName2").value || document.getElementById("employeeName").value || "",
-          signDate: document.getElementById("signDate").value || "",
-          signatureBase64: getSignatureImage()
-        };
+  const iframe = document.createElement("iframe");
+  iframe.name = "hiddenFrame";
+  iframe.style.display = "none";
+  document.body.appendChild(iframe);
 
-        await fetch(GOOGLE_SCRIPT_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload)
-        });
+  const formPost = document.createElement("form");
+  formPost.method = "POST";
+  formPost.action = GOOGLE_SCRIPT_URL;
+  formPost.target = "hiddenFrame";
+  formPost.style.display = "none";
 
-        alert("تم إرسال العقد تلقائيًا إلى الإيميل");
+  const data = {
+    employeeName: document.getElementById("employeeName").value || "",
+    employeeId: document.getElementById("employeeId").value || "",
+    employeeAddress: document.getElementById("employeeAddress").value || "",
+    employeePhone: document.getElementById("employeePhone").value || "",
+    employeeIban: document.getElementById("employeeIban").value || "",
+    signDate: document.getElementById("signDate").value || "",
+    signatureBase64: canvas.toDataURL("image/png").split(",")[1]
+  };
+
+  Object.keys(data).forEach(key => {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = key;
+    input.value = data[key];
+    formPost.appendChild(input);
+  });
+
+  document.body.appendChild(formPost);
+  formPost.submit();
+
+  setStatus("تم إرسال الطلب، انتظري وصول الإيميل.", "ok");
+  alert("تم إرسال العقد");
+};
         setStatus("تم إرسال العقد تلقائيًا إلى الإيميل.", "ok");
       } catch (err) {
         console.error(err);
