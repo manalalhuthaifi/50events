@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>عقد عمل - بوليفارد فلاورز</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
 
@@ -13,6 +13,7 @@
       --line: #d1d5db;
       --brand: #111827;
       --danger: #dc2626;
+      --ok: #166534;
     }
 
     * { box-sizing: border-box; }
@@ -44,7 +45,6 @@
       box-shadow: 0 14px 38px rgba(15, 23, 42, 0.08);
       font-size: 12.5px;
       line-height: 1.45;
-      overflow-wrap: break-word;
       direction: rtl !important;
       text-align: right !important;
       unicode-bidi: embed;
@@ -95,7 +95,6 @@
     }
 
     p { margin: 4px 0; }
-    .intro { margin-bottom: 8px; }
 
     .party-box {
       padding: 8px;
@@ -105,7 +104,10 @@
       margin: 6px 0;
     }
 
-    .party-title { font-weight: 800; margin-bottom: 4px; }
+    .party-title {
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
 
     .grid {
       display: grid;
@@ -163,7 +165,7 @@
       border: 1px solid var(--line);
       border-radius: 12px;
       padding: 10px;
-      background: #fff;
+      background: #ffffff;
       break-inside: avoid;
       page-break-inside: avoid;
       overflow: hidden;
@@ -189,7 +191,7 @@
       height: 145px;
       border: 1.5px dashed #9ca3af;
       border-radius: 10px;
-      background: #fff;
+      background: #ffffff;
       touch-action: none;
       display: block;
     }
@@ -199,6 +201,8 @@
       margin-top: 7px;
       padding: 9px;
       font-size: 13px;
+      background: #fee2e2;
+      color: var(--danger);
     }
 
     .actions {
@@ -215,6 +219,20 @@
       box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
     }
 
+    .note-box {
+      width: 100%;
+      max-width: 794px;
+      margin: 12px auto 0;
+      background: #fff7ed;
+      color: #9a3412;
+      border: 1px solid #fed7aa;
+      border-radius: 12px;
+      padding: 12px;
+      font-weight: 700;
+      font-size: 13px;
+      text-align: center;
+    }
+
     button {
       border: 0;
       border-radius: 10px;
@@ -225,10 +243,16 @@
       cursor: pointer;
     }
 
-    button:disabled { opacity: 0.65; cursor: not-allowed; }
-    .btn-main { background: var(--brand); color: white; }
-    .btn-outline { background: #ffffff; color: var(--brand); border: 1px solid var(--brand); }
-    .btn-danger { background: #fee2e2; color: var(--danger); }
+    .btn-main {
+      background: var(--brand);
+      color: #ffffff;
+    }
+
+    .btn-outline {
+      background: #ffffff;
+      color: var(--brand);
+      border: 1px solid var(--brand);
+    }
 
     .status {
       display: none;
@@ -265,6 +289,7 @@
 
     .pdf-mode input,
     .pdf-mode .actions,
+    .pdf-mode .note-box,
     .pdf-mode .status,
     .pdf-mode .clear-inside {
       display: none !important;
@@ -272,40 +297,129 @@
 
     .pdf-mode .pdf-only-value { display: block; }
 
-    .pdf-mode .contract {
-      width: 190mm;
-      max-width: 190mm;
-      margin: 0 auto;
-      padding: 4mm 5mm;
-      border: none;
-      border-radius: 0;
-      box-shadow: none;
-      font-size: 8.2px;
-      line-height: 1.12;
-      direction: rtl !important;
-      text-align: right !important;
-      unicode-bidi: embed;
-    }
+    @page { size: A4; margin: 6mm; }
 
-    .pdf-mode .contract-header { margin-bottom: 3px; padding-bottom: 2px; direction: ltr !important; }
-    .pdf-mode .logo-header,
-    .pdf-mode .header-space { width: 82px; }
-    .pdf-mode .logo-header img { width: 68px !important; max-height: 45px !important; }
-    .pdf-mode .contract-title { font-size: 15px; }
-    .pdf-mode h3 { font-size: 8.8px; margin: 3px 0 1px; padding-bottom: 1px; }
-    .pdf-mode p { margin: 1px 0; }
-    .pdf-mode .party-box { padding: 2px 4px; margin: 2px 0; border-radius: 5px; }
-    .pdf-mode .grid { gap: 3px; margin: 1px 0; }
-    .pdf-mode label { font-size: 8px; margin-bottom: 0; }
-    .pdf-mode .pdf-only-value { min-height: 14px; padding: 0 3px; }
-    .pdf-mode .article-list { padding-right: 10px; margin: 1px 0 2px; }
-    .pdf-mode .article-list li { margin-bottom: 0; line-height: 1.08; }
-    .pdf-mode .signatures { margin-top: 4px; gap: 5px; }
-    .pdf-mode .signature-card { padding: 3px; border-radius: 5px; }
-    .pdf-mode .signature-card h4 { font-size: 8.8px; margin: 0 0 1px; }
-    .pdf-mode .signature-line { min-height: 14px; margin: 1px 0 2px; }
-    .pdf-mode .signature-area { margin-top: 1px; }
-    .pdf-mode canvas { height: 52px; }
+    @media print {
+      body {
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        direction: rtl !important;
+        text-align: right !important;
+      }
+
+      .page-wrap {
+        padding: 0 !important;
+        max-width: none !important;
+      }
+
+      .contract {
+        width: 190mm !important;
+        max-width: 190mm !important;
+        margin: 0 auto !important;
+        padding: 4mm 5mm !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        font-size: 8.4px !important;
+        line-height: 1.14 !important;
+        direction: rtl !important;
+        text-align: right !important;
+        unicode-bidi: embed !important;
+      }
+
+      .contract-header {
+        margin-bottom: 3px !important;
+        padding-bottom: 2px !important;
+        direction: ltr !important;
+      }
+
+      .logo-header,
+      .header-space { width: 82px !important; }
+
+      .logo-header img {
+        width: 68px !important;
+        max-height: 45px !important;
+      }
+
+      .contract-title {
+        font-size: 15px !important;
+        direction: rtl !important;
+      }
+
+      h3 {
+        font-size: 9px !important;
+        margin: 3px 0 1px !important;
+        padding-bottom: 1px !important;
+      }
+
+      p { margin: 1px 0 !important; }
+
+      .party-box {
+        padding: 2px 4px !important;
+        margin: 2px 0 !important;
+        border-radius: 5px !important;
+      }
+
+      .party-title { margin-bottom: 1px !important; }
+
+      .grid {
+        gap: 3px !important;
+        margin: 1px 0 !important;
+      }
+
+      label {
+        font-size: 8.4px !important;
+        margin-bottom: 0 !important;
+      }
+
+      input,
+      .actions,
+      .note-box,
+      .status,
+      .clear-inside {
+        display: none !important;
+      }
+
+      .pdf-only-value {
+        display: block !important;
+        min-height: 14px !important;
+        padding: 0 3px !important;
+      }
+
+      .article-list {
+        padding-right: 10px !important;
+        margin: 1px 0 2px !important;
+      }
+
+      .article-list li {
+        margin-bottom: 0 !important;
+        line-height: 1.08 !important;
+      }
+
+      .signatures {
+        margin-top: 4px !important;
+        gap: 5px !important;
+      }
+
+      .signature-card {
+        padding: 3px !important;
+        border-radius: 5px !important;
+      }
+
+      .signature-card h4 {
+        font-size: 9px !important;
+        margin: 0 0 1px !important;
+      }
+
+      .signature-line {
+        min-height: 14px !important;
+        margin: 1px 0 2px !important;
+      }
+
+      .signature-area { margin-top: 1px !important; }
+      canvas { height: 50px !important; }
+    }
 
     @media (max-width: 720px) {
       .page-wrap { padding: 10px 7px 24px; }
@@ -336,38 +450,47 @@
 
       <div class="party-box">
         <div class="party-title">الطرف الأول:</div>
-        <p>مؤسسة خمسون فعالية لتنظيم الحشود، ومقرها الرياض – حي المروج – 12733، ويمثلها الأستاذ علي محمد الحذيفي بصفته المدير التنفيذي، ويُشار إليه في هذا العقد بـ ”صاحب العمل“.</p>
+        <p>
+          مؤسسة خمسون فعالية لتنظيم الحشود، ومقرها الرياض – حي المروج – 12733،
+          ويمثلها الأستاذ علي محمد الحذيفي بصفته المدير التنفيذي، ويُشار إليه في هذا العقد بـ ”صاحب العمل“.
+        </p>
       </div>
 
       <div class="party-box">
         <div class="party-title">الطرف الثاني:</div>
+
         <div class="grid">
           <div>
             <label for="employeeName">الاسم</label>
             <input id="employeeName" name="employeeName" required placeholder="اكتب الاسم الكامل" />
             <div class="pdf-only-value" data-for="employeeName"></div>
           </div>
+
           <div>
             <label for="employeeId">رقم الهوية/الإقامة</label>
             <input id="employeeId" name="employeeId" required placeholder="رقم الهوية أو الإقامة" />
             <div class="pdf-only-value" data-for="employeeId"></div>
           </div>
+
           <div>
             <label for="employeeAddress">العنوان</label>
             <input id="employeeAddress" name="employeeAddress" required placeholder="العنوان" />
             <div class="pdf-only-value" data-for="employeeAddress"></div>
           </div>
+
           <div>
             <label for="employeePhone">رقم الجوال</label>
             <input id="employeePhone" name="employeePhone" required placeholder="05xxxxxxxx" />
             <div class="pdf-only-value" data-for="employeePhone"></div>
           </div>
+
           <div style="grid-column: 1 / -1;">
             <label for="employeeIban">الحساب البنكي (الآيبان)</label>
             <input id="employeeIban" name="employeeIban" required placeholder="SAxxxxxxxxxxxxxxxxxxxxxx" />
             <div class="pdf-only-value" data-for="employeeIban"></div>
           </div>
         </div>
+
         <p>ويُشار إليه في هذا العقد بـ ”الموظف“.</p>
       </div>
 
@@ -422,6 +545,7 @@
 
         <div class="signature-card">
           <h4>الطرف الثاني (الموظف)</h4>
+
           <label for="employeeName2">الاسم</label>
           <input id="employeeName2" name="employeeName2" placeholder="يظهر تلقائيًا أو اكتب الاسم" />
           <div class="pdf-only-value" data-for="employeeName2"></div>
@@ -429,7 +553,7 @@
           <label>التوقيع</label>
           <div class="signature-area">
             <canvas id="signatureCanvas"></canvas>
-            <button type="button" class="btn-danger clear-inside" onclick="clearSignature()">مسح التوقيع</button>
+            <button type="button" class="clear-inside" onclick="clearSignature()">مسح التوقيع</button>
           </div>
 
           <label for="signDate">تاريخ التوقيع</label>
@@ -440,17 +564,20 @@
     </form>
 
     <div class="actions">
-      <button id="sendBtn" class="btn-main" type="button" onclick="sendAutoEmail()">إرسال العقد</button>
-      <button id="downloadBtn" class="btn-outline" type="button" onclick="downloadPDF()">تحميل PDF</button>
+      <button id="downloadBtn" class="btn-main" type="button" onclick="downloadPDF()">تحميل PDF</button>
+      <button id="emailBtn" class="btn-outline" type="button" onclick="openEmail()">إرسال بالإيميل</button>
+    </div>
+
+    <div class="note-box">
+      الخطوة الصحيحة: أولًا اضغط تحميل PDF واحفظ العقد، ثم اضغط إرسال بالإيميل وأرفق ملف العقد قبل الإرسال.
     </div>
 
     <div id="status" class="status"></div>
   </div>
 
   <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw1TdsPwdwKzVsTl0Uk-NTO6AXyUUeBKojkb9zJqza-d7zWs3OQdP7BUqL7sKy8XDa5Gg/exec";
+    const RECEIVER_EMAIL = "manalalhuthaifi@gmail.com";
     const form = document.getElementById("contractForm");
-    const contract = document.querySelector(".contract");
     const canvas = document.getElementById("signatureCanvas");
     const ctx = canvas.getContext("2d");
 
@@ -461,16 +588,21 @@
       const rect = canvas.getBoundingClientRect();
       const oldImage = hasSignature ? canvas.toDataURL("image/png") : null;
       const ratio = Math.max(window.devicePixelRatio || 1, 1);
+
       canvas.width = rect.width * ratio;
       canvas.height = 145 * ratio;
+
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
       ctx.lineWidth = 2;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
       ctx.strokeStyle = "#000";
+
       if (oldImage) {
         const img = new Image();
-        img.onload = function () { ctx.drawImage(img, 0, 0, rect.width, 145); };
+        img.onload = function () {
+          ctx.drawImage(img, 0, 0, rect.width, 145);
+        };
         img.src = oldImage;
       }
     }
@@ -480,12 +612,16 @@
       const signDate = document.getElementById("signDate");
       if (signDate) signDate.valueAsDate = new Date();
     });
+
     window.addEventListener("resize", resizeCanvas);
 
     function getPoint(e) {
       const rect = canvas.getBoundingClientRect();
       const point = e.touches ? e.touches[0] : e;
-      return { x: point.clientX - rect.left, y: point.clientY - rect.top };
+      return {
+        x: point.clientX - rect.left,
+        y: point.clientY - rect.top
+      };
     }
 
     function startDraw(e) {
@@ -539,9 +675,9 @@
       document.querySelectorAll(".pdf-only-value").forEach(function (el) {
         const field = document.getElementById(el.dataset.for);
         if (!field) return;
+
         if (field.type === "date" && field.value) {
           const parts = field.value.split("-");
-          // نخلي التاريخ من اليسار لليمين عشان ما يتلخبط داخل العربي
           el.classList.add("date-value");
           el.textContent = parts[0] + " / " + parts[1] + " / " + parts[2];
         } else {
@@ -554,107 +690,68 @@
     function validateForm() {
       if (!form.reportValidity()) return false;
       if (!hasSignature) {
-        setStatus("فضلاً أضيفي توقيع الموظف قبل الإرسال.", "err");
+        setStatus("فضلاً أضيفي توقيع الموظف قبل تحميل العقد أو إرساله.", "err");
         return false;
       }
       return true;
     }
 
-    function getPdfOptions(fileName) {
-      return {
-        margin: [4, 4, 4, 4],
-        filename: fileName,
-        image: { type: "jpeg", quality: 1 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          scrollY: 0,
-          letterRendering: false,
-          backgroundColor: "#ffffff"
-        },
-        jsPDF: {
-          unit: "mm",
-          format: "a4",
-          orientation: "portrait",
-          compress: true
-        },
-        pagebreak: { mode: ["avoid-all"] }
-      };
-    }
+    function downloadPDF() {
+      if (!validateForm()) return;
 
-    async function createPdfBlob() {
       fillPdfValues();
       document.body.classList.add("pdf-mode");
-      await new Promise(resolve => setTimeout(resolve, 250));
-      const blob = await html2pdf().set(getPdfOptions("عقد_عمل.pdf")).from(contract).outputPdf("blob");
+      setStatus("من نافذة الطباعة اختاري حفظ كـ PDF.", "ok");
+
+      setTimeout(function () {
+        window.print();
+      }, 300);
+    }
+
+    window.addEventListener("afterprint", function () {
       document.body.classList.remove("pdf-mode");
-      return blob;
-    }
+    });
 
-    async function downloadPDF() {
+    function openEmail() {
       if (!validateForm()) return;
-      const btn = document.getElementById("downloadBtn");
-      btn.disabled = true;
-      btn.textContent = "جاري تجهيز PDF...";
-      setStatus("جاري تجهيز ملف PDF...", "ok");
-      try {
-        fillPdfValues();
-        document.body.classList.add("pdf-mode");
-        await new Promise(resolve => setTimeout(resolve, 250));
-        await html2pdf().set(getPdfOptions("عقد_عمل.pdf")).from(contract).save();
-        document.body.classList.remove("pdf-mode");
-        setStatus("تم تحميل PDF بنجاح.", "ok");
-      } catch (err) {
-        document.body.classList.remove("pdf-mode");
-        setStatus("تعذر تحميل PDF. جرّبي مرة أخرى.", "err");
-      }
-      btn.disabled = false;
-      btn.textContent = "تحميل PDF";
-    }
 
-    async function sendAutoEmail() {
-      if (!validateForm()) return;
-      const btn = document.getElementById("sendBtn");
-      btn.disabled = true;
-      btn.textContent = "جاري تجهيز PDF...";
-      setStatus("جاري تجهيز العقد وإرساله...", "ok");
+      const name = document.getElementById("employeeName").value || "موظف";
+      const id = document.getElementById("employeeId").value || "-";
+      const phone = document.getElementById("employeePhone").value || "-";
+      const address = document.getElementById("employeeAddress").value || "-";
+      const iban = document.getElementById("employeeIban").value || "-";
+      const date = document.getElementById("signDate").value || "-";
 
-      try {
-        const pdfBlob = await createPdfBlob();
-        const reader = new FileReader();
-        reader.onloadend = async function () {
-          const pdfBase64 = reader.result.split(",")[1];
-          const payload = {
-            employeeName: document.getElementById("employeeName").value || "",
-            employeeId: document.getElementById("employeeId").value || "",
-            employeePhone: document.getElementById("employeePhone").value || "",
-            employeeAddress: document.getElementById("employeeAddress").value || "",
-            employeeIban: document.getElementById("employeeIban").value || "",
-            signDate: document.getElementById("signDate").value || "",
-            fileName: "عقد_عمل_" + (document.getElementById("employeeName").value || "موظف") + ".pdf",
-            pdfBase64: pdfBase64
-          };
+      const subject = encodeURIComponent("عقد عمل موقع - " + name);
+      const body = encodeURIComponent(
+        "السلام عليكم،
 
-          await fetch(GOOGLE_SCRIPT_URL, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify(payload)
-          });
+" +
+        "مرفق لكم عقد العمل الموقع بصيغة PDF.
 
-          btn.textContent = "تم الإرسال ✔";
-          setStatus("تم إرسال العقد PDF إلى الإيميل.", "ok");
-          setTimeout(function () {
-            btn.disabled = false;
-            btn.textContent = "إرسال العقد";
-          }, 2500);
-        };
-        reader.readAsDataURL(pdfBlob);
-      } catch (err) {
-        btn.disabled = false;
-        btn.textContent = "إرسال العقد";
-        setStatus("تعذر الإرسال. تأكدي من رابط Apps Script.", "err");
-      }
+" +
+        "تنبيه مهم: فضلاً أرفق ملف PDF الذي تم تحميله من زر تحميل PDF قبل إرسال الإيميل.
+
+" +
+        "بيانات الموظف:
+" +
+        "الاسم: " + name + "
+" +
+        "رقم الهوية/الإقامة: " + id + "
+" +
+        "رقم الجوال: " + phone + "
+" +
+        "العنوان: " + address + "
+" +
+        "الآيبان: " + iban + "
+" +
+        "تاريخ التوقيع: " + date + "
+
+" +
+        "شكرًا."
+      );
+
+      window.location.href = "mailto:" + RECEIVER_EMAIL + "?subject=" + subject + "&body=" + body;
     }
   </script>
 </body>
