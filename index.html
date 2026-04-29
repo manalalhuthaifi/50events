@@ -541,23 +541,16 @@
       </div>
     </form>
 
-    <div class="send-box">
-      <h3>إرسال العقد</h3>
-      <p>بعد تعبئة البيانات والتوقيع اضغط زر الإرسال ليتم إرسال العقد إلى الإيميل.</p>
-      <button class="btn-main" type="button" onclick="sendAutoEmail()">إرسال العقد الآن</button>
-    </div>
-
     <div class="actions">
-      <button class="btn-main" type="button" onclick="downloadPDF()">تحميل PDF جاهز</button>
-      <button class="btn-main" type="button" onclick="sendAutoEmail()">إرسال تلقائي</button>
-    </div>
+  <button id="sendBtn" class="btn-main" type="button" onclick="sendAutoEmail()">إرسال العقد</button>
+</div>
 
     <div id="status" class="status"></div>
   </div>
 
   <script>
     const RECEIVER_EMAIL = "manalalhuthaifi@gmail.com";
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz-HtFNR6SVC3H2XcFfS8WfXoS3L9hJrSKLoKscwVk_AJQjVyuM9FOy7VmKNbSLCrNJ9Q/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJgKI4Msci4SkM0OvQAppAzx55GT8OUDPYPyW8Eo7bJ7z0nB-DXmTcT3Oj8EB8gC1ngA/exec";
 
     const form = document.getElementById("contractForm");
     const contractElement = document.querySelector(".contract");
@@ -709,19 +702,32 @@
     });
 
     function sendAutoEmail() {
-      if (!validateForm()) return;
+  if (!validateForm()) return;
 
-      setStatus("جاري فتح رابط الإرسال...", "ok");
+  const btn = document.getElementById("sendBtn");
+  btn.disabled = true;
+  btn.innerText = "جاري الإرسال...";
 
-      const params = new URLSearchParams({
-        action: "sendContract",
-        employeeName: document.getElementById("employeeName").value || "",
-        employeeId: document.getElementById("employeeId").value || "",
-        employeeAddress: document.getElementById("employeeAddress").value || "",
-        employeePhone: document.getElementById("employeePhone").value || "",
-        employeeIban: document.getElementById("employeeIban").value || "",
-        signDate: document.getElementById("signDate").value || ""
-      });
+  setStatus("جاري إرسال العقد...", "ok");
+
+  const params = new URLSearchParams({
+    action: "sendContract",
+    employeeName: document.getElementById("employeeName").value || "",
+    employeeId: document.getElementById("employeeId").value || "",
+    employeeAddress: document.getElementById("employeeAddress").value || "",
+    employeePhone: document.getElementById("employeePhone").value || "",
+    employeeIban: document.getElementById("employeeIban").value || "",
+    signDate: document.getElementById("signDate").value || ""
+  });
+
+  const win = window.open(GOOGLE_SCRIPT_URL + "?" + params.toString(), "_blank");
+
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.innerText = "تم الإرسال ✔";
+    setStatus("تم إرسال العقد بنجاح", "ok");
+  }, 2000);
+});
 
       window.open(GOOGLE_SCRIPT_URL + "?" + params.toString(), "_blank");
       setStatus("تم فتح رابط الإرسال. إذا ظهرت صفحة OK فالإرسال تم.", "ok");
