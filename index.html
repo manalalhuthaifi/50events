@@ -662,17 +662,8 @@
       };
     }
 
-    async function createPdfBase64() {
-      fillPdfValues();
-      document.body.classList.add("pdf-mode");
-      const pdfBlob = await html2pdf().set(getPdfOptions()).from(contractElement).outputPdf("blob");
-      document.body.classList.remove("pdf-mode");
-      return new Promise(function (resolve, reject) {
-        const reader = new FileReader();
-        reader.onloadend = function () { resolve(reader.result.split(",")[1]); };
-        reader.onerror = reject;
-        reader.readAsDataURL(pdfBlob);
-      });
+    function getSignatureImage() {
+      return canvas.toDataURL("image/png").split(",")[1];
     }
 
     function downloadPDF() {
@@ -689,23 +680,29 @@
 
     async function sendAutoEmail() {
       if (!validateForm()) return;
+
       try {
-        setStatus("جاري تجهيز العقد وإرساله...", "ok");
-        const pdfBase64 = await createPdfBase64();
+        setStatus("جاري إرسال العقد...", "ok");
+
         const payload = {
           to: RECEIVER_EMAIL,
           employeeName: document.getElementById("employeeName").value || "موظف",
           employeeId: document.getElementById("employeeId").value || "",
+          employeeAddress: document.getElementById("employeeAddress").value || "",
           employeePhone: document.getElementById("employeePhone").value || "",
-          fileName: "عقد_عمل_موقع.pdf",
-          pdfBase64: pdfBase64
+          employeeIban: document.getElementById("employeeIban").value || "",
+          employeeName2: document.getElementById("employeeName2").value || document.getElementById("employeeName").value || "",
+          signDate: document.getElementById("signDate").value || "",
+          signatureBase64: getSignatureImage()
         };
+
         await fetch(GOOGLE_SCRIPT_URL, {
           method: "POST",
           mode: "no-cors",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify(payload)
         });
+
         alert("تم إرسال العقد تلقائيًا إلى الإيميل");
         setStatus("تم إرسال العقد تلقائيًا إلى الإيميل.", "ok");
       } catch (err) {
