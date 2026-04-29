@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -393,7 +392,7 @@
   </div>
 
   <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz3NVDyCSYSAu0A-2cn_eJxYBBxZWDJKY_wLuUY-6ZMk773gnTp27t_uce3O0_q3IG5xw/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw1TdsPwdwKzVsTl0Uk-NTO6AXyUUeBKojkb9zJqza-d7zWs3OQdP7BUqL7sKy8XDa5Gg/exec";
     const form = document.getElementById("contractForm");
     const canvas = document.getElementById("signatureCanvas");
     const ctx = canvas.getContext("2d");
@@ -485,14 +484,15 @@
       setTimeout(function () { window.print(); }, 300);
     }
 
-    async function sendAutoEmail() {
+    function sendAutoEmail() {
       if (!validateForm()) return;
+
       const btn = document.getElementById("sendBtn");
       btn.disabled = true;
       btn.textContent = "جاري الإرسال...";
-      setStatus("جاري إرسال العقد...", "ok");
+      setStatus("جاري فتح صفحة الإرسال...", "ok");
 
-      const payload = {
+      const params = new URLSearchParams({
         action: "sendContract",
         employeeName: document.getElementById("employeeName").value || "",
         employeeId: document.getElementById("employeeId").value || "",
@@ -500,25 +500,16 @@
         employeePhone: document.getElementById("employeePhone").value || "",
         employeeIban: document.getElementById("employeeIban").value || "",
         employeeName2: document.getElementById("employeeName2").value || document.getElementById("employeeName").value || "",
-        signDate: document.getElementById("signDate").value || "",
-        signatureBase64: getSignatureImage(),
-        logoBase64: await getLogoBase64()
-      };
+        signDate: document.getElementById("signDate").value || ""
+      });
 
-      try {
-        await fetch(GOOGLE_SCRIPT_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload)
-        });
-        btn.textContent = "تم الإرسال ✔";
-        setStatus("تم إرسال العقد. راجعي الإيميل خلال ثوانٍ.", "ok");
-      } catch (err) {
+      window.open(GOOGLE_SCRIPT_URL + "?" + params.toString(), "_blank");
+
+      setTimeout(function () {
         btn.disabled = false;
         btn.textContent = "إرسال العقد";
-        setStatus("تعذر الإرسال. تأكدي من رابط Google Apps Script.", "err");
-      }
+        setStatus("إذا ظهرت صفحة OK فالإرسال تم. راجعي الإيميل.", "ok");
+      }, 2000);
     }
   </script>
 </body>
